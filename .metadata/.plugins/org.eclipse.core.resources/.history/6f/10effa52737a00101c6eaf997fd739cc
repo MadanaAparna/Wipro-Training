@@ -1,0 +1,105 @@
+package selenium;
+
+import java.time.Duration;
+import java.util.Set;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+    	public class Lab6 {
+    	    public static void main(String[] args) throws InterruptedException {
+
+    	        // Setup Chrome
+    	        WebDriverManager.chromedriver().setup();
+    	        WebDriver driver = new ChromeDriver();
+    	        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+    	        driver.manage().window().maximize();
+
+    	        // Step 1: Open Login Page
+    	        driver.get("https://tutorialsninja.com/demo/index.php?route=account/login");
+
+    	        // Step 2: Login with credentials from Lab 1
+    	        driver.findElement(By.id("input-email")).sendKeys("yourEmail@test.com"); // <-- replace with real email
+    	        driver.findElement(By.id("input-password")).sendKeys("yourPassword");    // <-- replace with real password
+    	        driver.findElement(By.xpath("//input[@value='Login']")).click();
+
+    	        // Step 3: Go to 'Components' -> 'Monitors'
+    	        driver.findElement(By.linkText("Components")).click();
+    	        driver.findElement(By.linkText("Monitors (2)")).click();
+
+    	        // Step 4: Select '25' from 'Show' dropdown
+    	        WebElement showDropdown = driver.findElement(By.id("input-limit"));
+    	        showDropdown.click();
+    	        showDropdown.findElement(By.xpath("//option[text()='25']")).click();
+
+    	        // Step 5: Add first item to cart
+    	        driver.findElement(By.xpath("(//button[@data-original-title='Add to Cart'])[1]")).click();
+
+    	        // Step 6: Click 'Specification' tab
+    	        driver.findElement(By.linkText("Specification")).click();
+
+    	        // Step 7: Verify Specification tab is visible
+    	        Assert.assertTrue(driver.findElement(By.id("tab-specification")).isDisplayed(),
+    	                "Specification details not displayed!");
+
+    	        // Step 8: Add to Wish List
+    	        driver.findElement(By.xpath("//button[@data-original-title='Add to Wish List']")).click();
+
+    	        // Step 9: Verify Wish List success message
+    	        Assert.assertTrue(driver.getPageSource().contains("Success: You have added Apple Cinema 30\" to your wish list!"),
+    	                "Wish list success message not displayed!");
+
+    	        // Step 10: Search for 'Mobile'
+    	        driver.findElement(By.name("search")).sendKeys("Mobile");
+    	        driver.findElement(By.cssSelector("button.btn.btn-default.btn-lg")).click();
+
+    	        // Step 11: Enable 'Search in product descriptions' & search again
+    	        driver.findElement(By.id("description")).click();
+    	        driver.findElement(By.id("button-search")).click();
+
+    	        // Step 12: Open 'HTC Touch HD'
+    	        driver.findElement(By.linkText("HTC Touch HD")).click();
+
+    	        // Step 13: Change Qty to 3
+    	        WebElement qtyBox = driver.findElement(By.id("input-quantity"));
+    	        qtyBox.clear();
+    	        qtyBox.sendKeys("3");
+
+    	        // Step 14: Add to Cart
+    	        driver.findElement(By.id("button-cart")).click();
+
+    	        // Step 15: Verify success message
+    	        Assert.assertTrue(driver.getPageSource().contains("Success: You have added HTC Touch HD to your shopping cart!"),
+    	                "Cart success message not displayed!");
+
+    	        // Step 16: View Cart
+    	        driver.findElement(By.xpath("//a[contains(text(),'shopping cart')]")).click();
+
+    	        // Step 17: Verify product in cart
+    	        Assert.assertTrue(driver.getPageSource().contains("HTC Touch HD"),
+    	                "HTC Touch HD not found in cart!");
+
+    	        // Step 18: Checkout
+    	        driver.findElement(By.linkText("Checkout")).click();
+
+    	        // Step 19: Logout
+    	        driver.findElement(By.xpath("//span[text()='My Account']")).click();
+    	        driver.findElement(By.linkText("Logout")).click();
+
+    	        // Step 20: Verify Logout
+    	        Assert.assertTrue(driver.getPageSource().contains("Account Logout"),
+    	                "Account Logout page not displayed!");
+
+    	        // Step 21: Continue
+    	        driver.findElement(By.linkText("Continue")).click();
+
+    	        // Close browser
+    	        driver.quit();
+    	    }
+    	}

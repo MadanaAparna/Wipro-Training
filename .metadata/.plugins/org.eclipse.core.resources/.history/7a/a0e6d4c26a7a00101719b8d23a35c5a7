@@ -1,0 +1,82 @@
+package selenium;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+import java.time.Duration;
+import java.util.List;
+
+public class Lab6 {
+
+	public static void main(String[] args) throws InterruptedException {
+		 // Setup ChromeDriver using WebDriverManager
+        WebDriverManager.chromedriver().setup();
+        WebDriver driver = new ChromeDriver();
+
+        // Maximize window and open the URL
+        driver.manage().window().maximize();
+        driver.get("https://letcode.in/window");
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        String parentWindow = driver.getWindowHandle();
+
+        // =========================
+        // 1. Open Home Page
+        // =========================
+        WebElement homeBtn = wait.until(
+                ExpectedConditions.elementToBeClickable(By.id("home")));
+        homeBtn.click();
+
+        // Switch to new tab
+        Set<String> windows = driver.getWindowHandles();
+        for (String win : windows) {
+            if (!win.equals(parentWindow)) {
+                driver.switchTo().window(win);
+                System.out.println("Home Page Title: " + driver.getTitle());
+                driver.close(); // close the child tab
+            }
+        }
+        driver.switchTo().window(parentWindow); // back to parent
+
+        // =========================
+        // 2. Multi Windows
+        // =========================
+        WebElement multiBtn = wait.until(
+                ExpectedConditions.elementToBeClickable(By.id("multi")));
+        multiBtn.click();
+
+        Set<String> allWindows = driver.getWindowHandles();
+        for (String win : allWindows) {
+            driver.switchTo().window(win);
+            System.out.println("Window Title: " + driver.getTitle());
+        }
+        driver.switchTo().window(parentWindow); // back to parent
+
+        // =========================
+        // 3. Close Windows
+        // =========================
+        WebElement closeBtn = wait.until(
+                ExpectedConditions.elementToBeClickable(By.id("close")));
+        closeBtn.click();
+
+        Set<String> afterClose = driver.getWindowHandles();
+        for (String win : afterClose) {
+            if (!win.equals(parentWindow)) {
+                driver.switchTo().window(win);
+                driver.close(); // close child
+            }
+        }
+        driver.switchTo().window(parentWindow);
+
+        System.out.println("Test completed. Parent Title: " + driver.getTitle());
+
+        driver.quit(); // close all
+    }
+}

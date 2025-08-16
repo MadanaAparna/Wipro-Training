@@ -1,0 +1,120 @@
+package selenium;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+import java.time.Duration;
+import java.util.List;
+import java.util.Set;
+
+public class Lab6 {
+	 public static void main(String[] args) {
+	        WebDriverManager.chromedriver().setup();
+	        WebDriver driver = new ChromeDriver();
+	        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+	        try {
+	            driver.manage().window().maximize();
+	            driver.get("https://demo.opencart.com/"); // ✅ Change to your OpenCart site if needed
+
+	            // ======================
+	            // Login
+	            // ======================
+	            driver.findElement(By.xpath("//span[text()='My Account']")).click();
+	            driver.findElement(By.linkText("Login")).click();
+	            driver.findElement(By.id("input-email")).sendKeys("testuser@gmail.com"); // ✅ Lab1 email
+	            driver.findElement(By.id("input-password")).sendKeys("Password123");     // ✅ Lab1 password
+	            driver.findElement(By.xpath("//input[@value='Login']")).click();
+
+	            // ======================
+	            // Components → Monitors
+	            // ======================
+	            driver.findElement(By.linkText("Components")).click();
+	            driver.findElement(By.linkText("Monitors")).click();
+
+	            // Select "Show: 25"
+	            WebElement showDropdown = driver.findElement(By.id("input-limit"));
+	            new Select(showDropdown).selectByVisibleText("25");
+
+	            // ======================
+	            // Add to cart first item
+	            // ======================
+	            driver.findElement(By.xpath("(//button[@data-original-title='Add to Cart'])[1]")).click();
+
+	            // Go to Specification tab
+	            driver.findElement(By.linkText("Specification")).click();
+
+	            // Verify Specification details
+	            if (driver.getPageSource().contains("Specification")) {
+	                System.out.println("✅ Specification tab verified.");
+	            } else {
+	                System.out.println("❌ Specification tab not found.");
+	            }
+
+	            // Add to Wishlist
+	            driver.findElement(By.xpath("//button[@data-original-title='Add to Wish List']")).click();
+	            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".alert-success")));
+	            System.out.println("✅ Wishlist message: " + driver.findElement(By.cssSelector(".alert-success")).getText());
+
+	            // ======================
+	            // Search Mobile
+	            // ======================
+	            WebElement searchBox = driver.findElement(By.name("search"));
+	            searchBox.clear();
+	            searchBox.sendKeys("Mobile");
+	            driver.findElement(By.cssSelector("button.btn-default")).click();
+
+	            // Search in product descriptions
+	            driver.findElement(By.id("description")).click();
+	            driver.findElement(By.id("button-search")).click();
+
+	            // Open HTC Touch HD
+	            driver.findElement(By.linkText("HTC Touch HD")).click();
+
+	            // Change Qty = 3
+	            WebElement qtyBox = driver.findElement(By.id("input-quantity"));
+	            qtyBox.clear();
+	            qtyBox.sendKeys("3");
+
+	            // Add to Cart
+	            driver.findElement(By.id("button-cart")).click();
+	            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".alert-success")));
+	            System.out.println("✅ Add to Cart message: " + driver.findElement(By.cssSelector(".alert-success")).getText());
+
+	            // ======================
+	            // View Cart & Verify
+	            // ======================
+	            driver.findElement(By.xpath("//a[@title='Shopping Cart']")).click();
+	            if (driver.getPageSource().contains("HTC Touch HD")) {
+	                System.out.println("✅ HTC Touch HD present in cart.");
+	            } else {
+	                System.out.println("❌ HTC Touch HD not found in cart.");
+	            }
+
+	            // Checkout
+	            driver.findElement(By.linkText("Checkout")).click();
+
+	            // ======================
+	            // Logout
+	            // ======================
+	            driver.findElement(By.xpath("//span[text()='My Account']")).click();
+	            driver.findElement(By.linkText("Logout")).click();
+	            if (driver.getPageSource().contains("Account Logout")) {
+	                System.out.println("✅ Logout successful.");
+	            }
+
+	            driver.findElement(By.linkText("Continue")).click();
+
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        } finally {
+	            driver.quit();
+	        }
+	    }
+	}

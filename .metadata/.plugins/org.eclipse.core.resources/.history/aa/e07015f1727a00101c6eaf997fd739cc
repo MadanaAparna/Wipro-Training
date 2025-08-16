@@ -1,0 +1,57 @@
+package selenium;
+
+import java.time.Duration;
+import java.util.Set;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+public class Lab6 {
+    public static void main(String[] args) {
+        // Setup ChromeDriver
+        WebDriverManager.chromedriver().setup();
+        WebDriver driver = new ChromeDriver();
+
+        try {
+            driver.manage().window().maximize();
+            driver.get("https://letcode.in/window");
+
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+            // Click on "Open Home Page" button
+            WebElement btn = wait.until(
+                    ExpectedConditions.elementToBeClickable(By.id("home"))
+            );
+            btn.click();
+            System.out.println("✅ Clicked on Open Home Page button");
+
+            // Handle multiple windows
+            String parentWin = driver.getWindowHandle();
+            Set<String> allWins = driver.getWindowHandles();
+
+            for (String win : allWins) {
+                if (!win.equals(parentWin)) {
+                    driver.switchTo().window(win);
+                    System.out.println("✅ Switched to new window: " + driver.getTitle());
+                    driver.close(); // close child window
+                }
+            }
+
+            // Switch back to parent
+            driver.switchTo().window(parentWin);
+            System.out.println("✅ Back to parent window: " + driver.getTitle());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            driver.quit();
+            System.out.println("✅ Test completed, browser closed.");
+        }
+    }
+}
