@@ -1,0 +1,68 @@
+package selenium;
+
+import java.time.Duration;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+public class LabTests_TestNG {
+    WebDriver driver;
+    WebDriverWait wait;
+
+    @BeforeClass
+    public void setUp() {
+        WebDriverManager.chromedriver().setup();
+        driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        driver.get("https://tutorialsninja.com/demo/"); // ✅ Base URL
+    }
+
+    @Test(priority = 1)
+    public void testLab2_Modifications() {
+        System.out.println("Starting Lab2 Modifications Test");
+
+        // ✅ Wait for search box correctly
+        WebElement searchBox = wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("search")));
+        searchBox.clear();
+        searchBox.sendKeys("Laptop");
+
+        // ✅ Click search button
+        WebElement searchBtn = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button.btn.btn-default.btn-lg")));
+        searchBtn.click();
+    }
+
+    @Test(priority = 2)
+    public void testLab3_BasicFlow() {
+        System.out.println("Starting Lab3 Basic Flow Test");
+
+        // ✅ Hover over Desktops and click
+        WebElement desktopsMenu = wait.until(ExpectedConditions.visibilityOfElementLocated(By.linkText("Desktops")));
+        Actions actions = new Actions(driver);
+        actions.moveToElement(desktopsMenu).perform();
+
+        // ✅ Click "Show All Desktops" instead of raw "Desktops"
+        WebElement showAllDesktops = wait.until(ExpectedConditions.elementToBeClickable(By.linkText("Show All Desktops")));
+        showAllDesktops.click();
+
+        // ✅ Add first desktop product to cart
+        WebElement firstAddToCart = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("(//button[@data-original-title='Add to Cart'])[1]")));
+        firstAddToCart.click();
+    }
+
+    @AfterClass
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+}

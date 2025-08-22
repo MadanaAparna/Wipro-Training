@@ -1,0 +1,94 @@
+package pack1;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;   // For .xls files
+import org.apache.poi.ss.usermodel.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.Assert;
+import org.testng.annotations.*;
+
+public class Lab14 {
+
+    WebDriver driver;
+
+    // ====== DataProvider: Reads Excel ======
+    @DataProvider(name = "userData")
+    public Object[][] readExcelData() throws IOException {
+        // Correct path: read from src/test/resources
+        String filePath = System.getProperty("user.dir") + "/src/test/resources/UserDetails.xls";
+        FileInputStream fis = new FileInputStream(filePath);
+        Workbook workbook = new HSSFWorkbook(fis);   // for .xls files
+        Sheet sheet = workbook.getSheetAt(0);
+
+        int rowCount = sheet.getPhysicalNumberOfRows();
+        int colCount = sheet.getRow(0).getPhysicalNumberOfCells();
+
+        Object[][] data = new Object[rowCount - 1][colCount];
+
+        // start from row 1 (skip header)
+        for (int i = 1; i < rowCount; i++) {
+            Row row = sheet.getRow(i);
+            for (int j = 0; j < colCount; j++) {
+                data[i - 1][j] = row.getCell(j).toString();
+            }
+        }
+
+        workbook.close();
+        fis.close();
+        return data;
+    }
+
+    // ====== Before each test ======
+    @BeforeMethod
+    public void setup() {
+        driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        driver.get("http://demo.opencart.com/");
+    }
+
+    // ====== Test Method ======
+    @Test(dataProvider = "userData")
+    public void registerUser(String firstName, String lastName, String email,
+                             String telephone, String password, String confirmPassword) {
+
+        // Verify title
+        Assert.assertTrue(driver.getTitle().contains("Your Store"), "Title mismatch!");
+
+        // Navigate to Register page
+        driver.findElement(By.xpath("//span[text()='My Account']")).click();
+        driver.findElement(By.linkText("Register")).click();
+
+        // Fill form
+        driver.findElement(By.id("input-firstname")).sendKeys(firstName);
+        driver.findElement(By.id("input-lastname")).sendKeys(lastName);
+        driver.findElement(By.id("input-email")).sendKeys(email);
+        driver.findElement(By.id("input-telephone")).sendKeys(telephone);
+        driver.findElement(By.id("input-password")).sendKeys(password);
+        driver.findElement(By.id("input-confirm")).sendKeys(confirmPassword);
+
+        // Privacy Policy checkbox
+        WebElement checkbox = driver.findElement(By.name("agree"));
+        if (!checkbox.isSelected()) {
+            checkbox.click();
+        }
+
+        // Click Continue
+        driver.findElement(By.xpath("//input[@value='Continue']")).click();
+
+        // Verify success
+        String successMsg = driver.findElement(By.xpath("//h1")).getText();
+        Assert.assertEquals(successMsg, "Your Account Has Been Created!", "Account not created!");
+    }
+
+    // ====== After each test ======
+    @AfterMethod
+    public void tearDown() throws InterruptedException {
+        Thread.sleep(2000);
+        driver.quit();
+    }
+}

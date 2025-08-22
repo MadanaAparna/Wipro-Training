@@ -1,0 +1,9 @@
+package pack1;
+
+import org.testng.annotations.Test;
+
+public class TC0012_TestNGScreenshot {
+  @Test
+  public void f() {
+  }
+}

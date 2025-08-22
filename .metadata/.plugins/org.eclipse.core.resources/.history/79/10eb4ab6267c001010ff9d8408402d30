@@ -1,0 +1,79 @@
+package selenium;
+
+import org.testng.Assert;
+import org.testng.Reporter;
+import org.testng.annotations.*;
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+import java.time.Duration;
+
+public class LabTests_TestNG {
+    WebDriver driver;
+    WebDriverWait wait;
+
+    @BeforeMethod
+    public void setUp() {
+        WebDriverManager.chromedriver().setup();
+        driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        driver.get("http://demo.opencart.com/");
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
+
+    @Test(priority = 1)
+    public void testLab2_Modifications() {
+        Reporter.log("Starting Lab2 Modifications Test", true);
+
+        driver.findElement(By.name("search")).sendKeys("Macbook");
+        Reporter.log("Entered search text", true);
+
+        driver.findElement(By.cssSelector("button.btn.btn-default.btn-lg")).click();
+        Reporter.log("Clicked search button", true);
+
+        String title = driver.findElement(By.linkText("MacBook")).getText();
+        Reporter.log("Captured product title: " + title, true);
+
+        Assert.assertEquals(title, "MacBook");
+        Reporter.log("Verification Passed", true);
+    }
+
+    @Test(priority = 2)
+    public void testLab3_BasicFlow() {
+        Reporter.log("Starting Lab3 Basic Flow Test", true);
+
+        // ✅ Hover over "Desktops"
+        WebElement desktopsMenu = wait.until(ExpectedConditions.visibilityOfElementLocated(By.linkText("Desktops")));
+        Actions actions = new Actions(driver);
+        actions.moveToElement(desktopsMenu).pause(Duration.ofSeconds(1)).perform();
+
+        // ✅ Click "Show All Desktops"
+        WebElement showAllDesktops = wait.until(
+                ExpectedConditions.elementToBeClickable(By.xpath("//a[text()='Show All Desktops']")));
+        showAllDesktops.click();
+        Reporter.log("Navigated to Show All Desktops", true);
+
+        // ✅ Add first product to cart
+        WebElement firstAddToCart = wait.until(ExpectedConditions
+                .elementToBeClickable(By.xpath("(//button[@data-original-title='Add to Cart'])[1]")));
+        firstAddToCart.click();
+        Reporter.log("Clicked Add to Cart", true);
+
+        // ✅ Verify success message
+        String successMsg = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".alert-success")))
+                .getText();
+        Reporter.log("Captured success message: " + successMsg, true);
+
+        Assert.assertTrue(successMsg.contains("Success: You have added"));
+        Reporter.log("Verification Passed", true);
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        driver.quit();
+    }
+}

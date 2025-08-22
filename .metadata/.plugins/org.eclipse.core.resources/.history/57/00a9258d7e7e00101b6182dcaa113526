@@ -1,0 +1,40 @@
+package pack1;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class Lab12 {
+    public static void main(String[] args) throws IOException {
+        // Load properties file
+        Properties prop = new Properties();
+        FileInputStream fis = new FileInputStream("D:\\PROGRAMS\\wipro\\Lab12.properties");
+        prop.load(fis);
+
+        // Get properties
+        String chromeDriverPath = prop.getProperty("chromedriver");
+        String url = prop.getProperty("url");
+        String username = prop.getProperty("username");
+        String passwordXpath = prop.getProperty("password");
+        String loginBtn = prop.getProperty("login_button");
+
+        // Set system property
+        System.setProperty("webdriver.chrome.driver", chromeDriverPath);
+        WebDriver driver = new ChromeDriver();
+
+        // Open URL
+        driver.get(url);
+
+        // Example usage: login scenario
+        driver.findElement(By.name("username")).sendKeys(username);
+        driver.findElement(By.xpath(passwordXpath)).sendKeys("mypassword");
+        driver.findElement(By.name(loginBtn)).click();
+
+        // Close browser
+        driver.quit();
+    }
+}

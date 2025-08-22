@@ -1,0 +1,40 @@
+package pack1;
+
+import org.testng.annotations.Test;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.*;
+
+public class Lab3_TestNG {
+    WebDriver driver;
+
+    @BeforeMethod
+    public void setup() {
+        driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        driver.get("http://demo.opencart.com/");
+    }
+
+    @Test
+    public void testLab3_BasicFlow() {
+        // Click on Desktops tab
+        driver.findElement(By.linkText("Desktops")).click();
+
+        // Click on Mac
+        driver.findElement(By.linkText("Mac")).click();
+
+        // Select Name (A-Z) from Sort By dropdown
+        driver.findElement(By.id("input-sort")).sendKeys("Name (A - Z)");
+
+        // Click Add to Cart button
+        driver.findElement(By.xpath("//button[contains(text(),'Add to Cart')]")).click();
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        driver.quit();
+    }
+}
+

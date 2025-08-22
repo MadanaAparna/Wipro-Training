@@ -1,0 +1,88 @@
+package selenium;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import org.testng.Reporter;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+import java.time.Duration;
+
+public class LabTests_TestNG {
+    WebDriver driver;
+    WebDriverWait wait;
+
+    @BeforeClass
+    public void setUp() {
+        WebDriverManager.chromedriver().setup();
+        driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        driver.get("https://tutorialsninja.com/demo/");
+    }
+
+    @Test
+    public void testLab3_BasicFlow() {
+        Reporter.log("Hovering over Desktops menu", true);
+        WebElement desktopsMenu = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[normalize-space()='Desktops']"))
+        );
+        Actions actions = new Actions(driver);
+        actions.moveToElement(desktopsMenu).perform();
+
+        Reporter.log("Waiting for submenu 'Show All Desktops'", true);
+        WebElement allDesktops = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[normalize-space()='Show All Desktops']"))
+        );
+
+        Reporter.log("Clicking 'Show All Desktops'", true);
+        allDesktops.click();
+
+        Reporter.log("Verifying product list is displayed", true);
+        WebElement product = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".product-thumb"))
+        );
+        Assert.assertTrue(product.isDisplayed(), "Products not displayed in Desktops!");
+    }
+
+    @Test
+    public void testLab4_AddToCart() {
+        Reporter.log("Navigating to Phones & PDAs", true);
+        WebElement phonesMenu = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[normalize-space()='Phones & PDAs']"))
+        );
+        phonesMenu.click();
+
+        Reporter.log("Clicking on HTC Touch HD", true);
+        WebElement phone = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[normalize-space()='HTC Touch HD']"))
+        );
+        phone.click();
+
+        Reporter.log("Adding phone to cart", true);
+        WebElement addToCart = wait.until(
+                ExpectedConditions.elementToBeClickable(By.id("button-cart"))
+        );
+        addToCart.click();
+
+        Reporter.log("Verifying success message", true);
+        WebElement success = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".alert-success"))
+        );
+        Assert.assertTrue(success.getText().contains("Success"), "Add to cart failed!");
+    }
+
+    @AfterClass
+    public void tearDown() {
+        driver.quit();
+    }
+}

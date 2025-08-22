@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Failed suite [Selenium IDE Conversion Suite]" guice-stage="DEVELOPMENT">
+  <test thread-count="5" name="Opencart TestNG Tests(failed)">
+    <classes>
+      <class name="selenium.LabTests_TestNG">
+        <methods>
+          <include name="tearDown"/>
+          <include name="setUp"/>
+          <include name="testLab2_Modifications"/>
+          <include name="testLab3_BasicFlow"/>
+        </methods>
+      </class> <!-- selenium.LabTests_TestNG -->
+    </classes>
+  </test> <!-- Opencart TestNG Tests(failed) -->
+</suite> <!-- Failed suite [Selenium IDE Conversion Suite] -->
