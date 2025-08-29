@@ -1,9 +1,0 @@
-package pack1;
-
-import org.testng.annotations.Test;
-
-public class Lab9_lab3crossbrowser {
-  @Test
-  public void f() {
-  }
-}

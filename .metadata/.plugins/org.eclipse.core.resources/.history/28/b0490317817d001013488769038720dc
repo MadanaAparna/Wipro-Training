@@ -1,9 +1,0 @@
-package pack1;
-
-import org.testng.annotations.Test;
-
-public class Lab3_TestNG {
-  @Test
-  public void f() {
-  }
-}
